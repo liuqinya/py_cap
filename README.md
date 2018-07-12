@@ -12,4 +12,3 @@ process_data_to_sac.py -- load in waveform stream, remove instrument response, f
 
 prepare_for_gcap.py -- prepare the weight file (weight.dat.depth) and create bash script `cap_auto.bash' in the gcap directory to write the 'cap.pl' command line based on choices of inversion parameters (filters, distance scale, plot scale, weights, window selection, etc). Create all the necessary data links. Note: a line of system("ps2pdf $outps $outpdf"); has been added to cap_plt.pl to generate output plots in pdf format which is much more friendly to view.
 
-# test pull-request
