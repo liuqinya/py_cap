@@ -11,7 +11,9 @@ import obspy.taup as taup
 import sys,math,glob, os
 import pickle
 
-data_dir=os.getcwd() # this cannot be changed because the naming in bash script
+# this code can be only run in the data directory where data.pkl sits.
+data_dir=os.getcwd() 
+parent_dir=os.path.dirname(os.path.normpath(data_dir))
 data_pkl=data_dir+'/data.pkl'
 print('Unpacking '+data_pkl+' file ...')
 f=open(data_pkl,'rb')
@@ -41,7 +43,9 @@ fk_dir='/data2/gcap-inv/fk' # absolute path to fk run code
 model='vmn'
 if not os.path.isfile(fk_dir+'/'+model):
     sys.exit('No model file: '+fk_dir+'/'+model)
-green_dir='/data2/gcap-inv/induced-earthquakes/'+model # absolute path to greens function output dir
+green_dir=parent_dir+'/'+model # absolute path to greens function output dir
+os.makedirs(green_dir,exist_ok=True)
+
 depths=['5']
 run_bash=False
 deltat=0.05
@@ -53,7 +57,7 @@ print('\nWriting fk_bash.cmd for processing in sac ...')
 print('  rotate seismograms ...\n')
 fp=open('fk_bash.cmd','w')
 fp.write('#!/bin/bash\ncd '+data_dir+'\nsac <<EOF\n') #set -x to debug bash code
-for efile in glob.glob(data_dir+'*.*.*.??[1E].sac'):
+for efile in glob.glob(data_dir+'/*.*.*.??[1E].sac'):
     nfile=efile.replace('1.sac','2.sac').replace('E.sac','N.sac')
     rfile=efile.replace('1.sac','R.sac').replace('E.sac','R.sac')
     tfile=nfile.replace('2.sac','T.sac').replace('N.sac','T.sac')

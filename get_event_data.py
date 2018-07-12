@@ -64,7 +64,7 @@ for net in inv:
         # exclude the station with missing data (even after merge)
         if sta.code not in exclude_sta:
             bulk.append((net.code,sta.code,'*','?H?',ev_time-pre_origin_length,ev_time+record_length))
-print(bulk)
+#print(bulk)
 print('Requesting waveforms ...')
 stream=client.get_waveforms_bulk(bulk, attach_response=True)
 stream.merge(fill_value='interpolate')

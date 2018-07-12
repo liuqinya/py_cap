@@ -1,35 +1,44 @@
 #!/usr/bin/env python
 
 import sys, os, glob, commands
+# use absolute path for gcap_dir, event_dir 
 
-green_dir='/data2/gcap-inv/induced-earthquakes/'
+# run directory for gcap code, data dir is imbedded as a link
 gcap_dir='/data2/gcap-inv/gcap'
-data_dir='/data2/gcap-inv/induced-earthquakes/data/'
-data_link_dir_in_gcap='data' #important to strip out the '/'
-data_link=gcap_dir+'/'+data_link_dir_in_gcap
+
+# event data and greens function directory
+event_dir='/data2/gcap-inv/test'
+gcap_command_file=event_dir+'/cap_auto.bash'
 model='vmn'
+green_dir=event_dir+'/' # no need to add model for the cap.pl command
+data_dir=event_dir+'/data'
+dist_list=data_dir+'/'+'dist.list'
+if not os.path.isfile(dist_list):
+    sys.exit('No file: '+dist_list)
+
 depth=5  # write this into a loop?
 deltat=0.05
 
-gcap_command_file=gcap_dir+'/cap_auto.bash'
-dist_list='dist.list'
+model_dep=model+'_'+str(depth)
+model_dir=green_dir+'/'+model+'/'+model_dep
+if not os.path.isdir(model_dir):
+    sys.exit('No greens function dir: '+model_dir)
 
-model_dir=model+'_'+str(depth)
-weight_file='weight.dat.'+str(depth)
-print('write '+weight_file+' for depth '+str(depth)+' km and data in '+data_dir+'...\n')
-fw=open(weight_file,'w')
+weight_file='weight.dat.'+str(depth) # no need to add data_dir/
+print('write '+data_dir+'/'+weight_file+' for depth '+str(depth)+' km and data in '+data_dir+'...\n')
+fw=open(data_dir+'/'+weight_file,'w')
 for line in open(dist_list,'r'):
     [file,dist]=line.split()
     file1=file[:-2] # distance
     #dist=os.system('grep '+file+' '+dist_list+' | awk \'{print $2}\'')
     dist_km=int(round(float(dist)))
     #print(file1, dist_km)
-    sac_grn=green_dir+'/'+model+'/'+model_dir+'/'+dist+'.grn.0'
+    sac_grn=model_dir+'/'+dist+'.grn.0'
     if not os.path.isfile(sac_grn):
         sys.exit('No such greens function file '+sac_grn)
     tp=commands.getoutput('saclst t1 t2 f '+sac_grn).split()[1]
     #print(tp)
-    # note the cap c code is very finicky about the format of the weight input
+    # note the gcap c code is very finicky about the format of the weight input
     # need to read the source code to understand why
     fw.write("%-10s %5d %.0f %.0f %.0f %.0f %.0f %.1f %.0f\n" %
              (file1, dist_km, 1, 1, 1, 1, 1, float(tp), 0))
@@ -48,12 +57,7 @@ body_surf_weight='-S2/5/0'; window='-T30/70'
 # link data dir for cap command in cap.pl: /cap data vmn_5
 fw=open(gcap_command_file,'w')
 fw.write('#!/bin/bash\ncd '+gcap_dir+'\n')
-if os.path.isfile(data_link):
-    sys.exit('data link dir '+data_dir+' already exists as a file')
-if os.path.islink(data_link):
-    os.unlink(data_link)
-os.symlink(data_dir, data_link)
-fw.write('./cap.pl -M'+model_dir+'/'+str(mw)+ \
+fw.write('./cap.pl -M'+model_dep+'/'+str(mw)+ \
          '        -H'+str(deltat)+ \
          '        -C'+str(pnl_fmin)+'/'+str(pnl_fmax)+'/'
          +str(surf_fmin)+'/'+str(surf_fmax)+ \
@@ -61,7 +65,6 @@ fw.write('./cap.pl -M'+model_dir+'/'+str(mw)+ \
          dist_scale+' '+body_surf_weight+' '+plot_scale+' '+window+ \
          ' -Z'+weight_file+' ' +\
          ' -G'+green_dir+' '+\
-         data_link_dir_in_gcap+'\n')
+         data_dir+'\n')
 fw.close()
 
-# why does it fail
