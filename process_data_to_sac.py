@@ -46,7 +46,7 @@ if not os.path.isfile(fk_dir+'/'+model):
 green_dir=parent_dir+'/'+model # absolute path to greens function output dir
 os.makedirs(green_dir,exist_ok=True)
 
-depths=['5']
+depths=['1','3','5','7','9'] # depth loop for fk
 run_bash=False
 deltat=0.05
 syn_rec_length=160 # in seconds
