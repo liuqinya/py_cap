@@ -16,7 +16,7 @@ dist_list=data_dir+'/'+'dist.list'
 if not os.path.isfile(dist_list):
     sys.exit('No file: '+dist_list)
 
-depth=5  # write this into a loop?
+depths=['1','3','5','7','9'] #write depths into a loop, should be consistent with the depths list in process_data_to_sac.py
 deltat=0.05
 
 model_dep=model+'_'+str(depth)
@@ -56,8 +56,9 @@ body_surf_weight='-S2/5/0'; window='-T30/70'
 
 # link data dir for cap command in cap.pl: /cap data vmn_5
 fw=open(gcap_command_file,'w')
+depths_str = " ".join(depths) # convert the depths list to str
 fw.write('#!/bin/bash\ncd '+gcap_dir+'\n')
-fw.write('./cap.pl -M'+model_dep+'/'+str(mw)+ \
+fw.write('for h in '+depths_str+'; do ./cap.pl -M'+model+'_$h'+'/'+str(mw)+ \ 
          '        -H'+str(deltat)+ \
          '        -C'+str(pnl_fmin)+'/'+str(pnl_fmax)+'/'
          +str(surf_fmin)+'/'+str(surf_fmax)+ \
@@ -65,6 +66,6 @@ fw.write('./cap.pl -M'+model_dep+'/'+str(mw)+ \
          dist_scale+' '+body_surf_weight+' '+plot_scale+' '+window+ \
          ' -Z'+weight_file+' ' +\
          ' -G'+green_dir+' '+\
-         data_dir+'\n')
+         data_dir+'; done')
 fw.close()
 
