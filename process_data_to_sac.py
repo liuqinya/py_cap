@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Written in March-April 2018
+updated August 2018
 """
 
 from obspy import Catalog, Stream
@@ -38,25 +39,29 @@ print('Write data to sac files ...')
 sac_utils.stream_add_stats(stream,inv,ev,write_sac=True)
 
 #------------
-
 fk_dir='/data2/gcap-inv/fk' # absolute path to fk run code
-model='vmn'
-if not os.path.isfile(fk_dir+'/'+model):
-    sys.exit('No model file: '+fk_dir+'/'+model)
+model='centralok'
 green_dir=parent_dir+'/'+model # absolute path to greens function output dir
 os.makedirs(green_dir,exist_ok=True)
+if not os.path.isfile(green_dir+'/'+model):
+    sys.exit('No model file: '+green_dir+'/'+model)
 
-depths=['5']
+depths=[1, 2, 3.1, 4, 5, 6, 7] # avoid depth on model interfaces
 run_bash=False
 deltat=0.05
 syn_rec_length=160 # in seconds
 nt= int(math.pow(2,round(math.log(syn_rec_length/deltat,2))))
+
+pre_origin_length=50
+record_length = 180 # 3 min
 
 print('\nWriting fk_bash.cmd for processing in sac ...')
 # rotate sac (STA.NET.LOC.CMP.sac) in SAC
 print('  rotate seismograms ...\n')
 fp=open('fk_bash.cmd','w')
 fp.write('#!/bin/bash\ncd '+data_dir+'\nsac <<EOF\n') #set -x to debug bash code
+fp.write('  cut  o '+str(-pre_origin_length+1)+' '+str(record_length-1)+'\n')
+
 for efile in glob.glob(data_dir+'/*.*.*.??[1E].sac'):
     nfile=efile.replace('1.sac','2.sac').replace('E.sac','N.sac')
     rfile=efile.replace('1.sac','R.sac').replace('E.sac','R.sac')
@@ -64,7 +69,9 @@ for efile in glob.glob(data_dir+'/*.*.*.??[1E].sac'):
 #    print(efile, nfile, rfile, tfile)
     if not os.path.isfile(nfile):
         sys.exit('Error finding matching '+nfile+' to '+efile)
+#   use the cut command in sac to insure the same length of e,n or 1,2 files
     fp.write('  r '+efile+' '+nfile+'\n')
+#    fp.write('  cut off\n')
     fp.write('  rotate\n')
     fp.write('  w '+rfile+' '+tfile+'\n')
 
@@ -92,11 +99,11 @@ fp.write('dist=`awk \'{print $2}\' '+dist_list+' | sort -g -u | awk  \'{printf "
 
 # write fk command
 print('  write fk command ...\n')
+fp.write('cp '+green_dir+'/'+model+' '+fk_dir+'\n')
 for depth in depths:
     fk_command='./fk.pl -M'+model+'/'+str(depth)+'/k -N'+str(nt)+'/'+str(deltat)+' $dist\n'
     fp.write('\ncd '+fk_dir+'\necho *****'+fk_command+fk_command)
-    fp.write('mkdir -p '+green_dir+'\nrm -rf '+green_dir+'/'+ model+'_'+str(depth)+'\nmv '+model+'_'+str(depth)+' '+green_dir+'\n')
-fp.write('cp -f '+model+' '+green_dir+'\n')
+    fp.write('rm -rf '+green_dir+'/'+ model+'_'+str(depth)+'\nmv '+model+'_'+str(depth)+' '+green_dir+'\n')
 fp.close()
 
 # Question: any need to pre-pad greens functions?
