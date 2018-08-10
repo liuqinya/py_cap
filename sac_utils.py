@@ -29,7 +29,7 @@ def stream_add_stats(data_stream,inv,evt,write_sac=False,rotate_in_obspy=False):
     for net in inv:
         for sta in net:
             str1=data_stream.select(network=net.code,station=sta.code)
-            print(str(net.code),str(sta.code),len(str1))
+#            print(str(net.code),str(sta.code),len(str1))
             if len(str1) == 0:
                 continue
             # update in future to deal with multiple channel (total_number_of channels)

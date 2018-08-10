@@ -23,11 +23,13 @@ inv=pickle.load(f)
 stream=pickle.load(f)
 f.close()
 
-# prefilter to facilitate interpolation later
-f_min=0.01 # Hz
-f_max=4.0 # Hz
+# anti-aliasing filter before interpolation (delta=0.05)
+T_min=0.25 # sec
+T_max=100 # sec
+f_min=1./T_max # Hz
+f_max=1./T_min # Hz
 filter=True
-print('Processing data (remove instrument response, anti-aliasing filter) ...')
+print('Processing data (remove instrument response, apply anti-aliasing filter) ...')
 # water-level of 100 is clearly too big, the default 60 is probably alright.
 # use plot=True to see the effect of water-level. water level 10 is also ok.
 stream.remove_response(water_level=50,output='VEL')
@@ -40,13 +42,13 @@ sac_utils.stream_add_stats(stream,inv,ev,write_sac=True)
 
 #------------
 fk_dir='/data2/gcap-inv/fk' # absolute path to fk run code
-model='centralok'
+model='chelsea'
 green_dir=parent_dir+'/'+model # absolute path to greens function output dir
 os.makedirs(green_dir,exist_ok=True)
 if not os.path.isfile(green_dir+'/'+model):
     sys.exit('No model file: '+green_dir+'/'+model)
 
-depths=[1, 2, 3.1, 4, 5, 6, 7] # avoid depth on model interfaces
+depths=[2,3,4,5,6,7] # avoid depth on model interfaces
 run_bash=False
 deltat=0.05
 syn_rec_length=160 # in seconds
