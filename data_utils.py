@@ -96,11 +96,11 @@ def write_weight_file(weight_file,dist_list,model_dir,check_bad_fit=False,bad_fi
                     if cmp not in ['P','Z','R','T']:
                         sys.exit('Error component names in '+bad_fit_station_file)
                     use_cmps[cmp]=0
-            # adjust based on distance
-            if dist_km < min_dist_pnl:
-                use_cmps['P'] = 0
-            if dist_km > max_dist:
-                use_cmps={'P':0,'Z':0,'R':0,'T':0}
+        # adjust based on distance
+        if dist_km < min_dist_pnl:
+            use_cmps['P'] = 0
+        if dist_km > max_dist:
+            use_cmps={'P':0,'Z':0,'R':0,'T':0}
 
 # note the gcap c code is very finicky about the format of the weight input
 # need to read the source code to understand why 
