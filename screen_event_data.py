@@ -28,19 +28,27 @@ stream=pickle.load(f)
 f.close()
 
 # print('Remove pre-screened bad stations from stream ...')
-# station_screen_file='bad-quality-stations.txt'
-# data_utils.remove_station_from_stream(stream,inv,bad_station_file=station_screen_file)
+use_existing_screen_file=False
+if use_existing_screen_file:
+    station_screen_file='bad-quality-stations.txt'
+    data_utils.remove_station_from_stream(stream,inv,bad_station_file=station_screen_file)
+
+print('Processing data (e.g., remove instrument response, anti-aliasing filter) ...')
+# to screen raw data for clipping, set remove_response and filter to be both False
+# remove instrument response
+remove_response=True
+if remove_response: 
+    stream.remove_response(water_level=50,output='VEL')
 
 # apply filter to screen specific type of data: surface waves
-filter=True
-# use [2.5, 20] sec to cover the bands for pnl and surf
-T_min=2.5  # 0.5
-T_max=20. # 40
-f_min=1./T_max # Hz
-f_max=1./T_min # Hz
-print('Processing data (remove instrument response, anti-aliasing filter) ...')
-stream.remove_response(water_level=50,output='VEL')
-if filter:
+bp_filter=True
+if bp_filter:
+    # use [2.5, 20] sec to cover the bands for pnl and surf
+    T_min=2.5  # 0.5
+    T_max=20. # 40
+    f_min=1./T_max # Hz
+    f_max=1./T_min # Hz
+
     stream.detrend("linear")
     stream.taper(max_percentage=0.05, type="hann")
     stream.filter('bandpass',freqmin=f_min,freqmax=f_max,corners=2,zerophase=True)
