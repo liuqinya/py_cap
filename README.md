@@ -1,5 +1,5 @@
 # py_cap
-Python utilities for running GCAP (a source mechanism inversion code by Zhu L.)
+Python utilities for running GCAP (a source mechanism inversion code by Zhu L. http://www.eas.slu.edu/People/LZhu/home.html)
 
 Currently a manual page for using FK and GCAP has been setup at:
 https://www.overleaf.com/read/dtxzwrqntztd
