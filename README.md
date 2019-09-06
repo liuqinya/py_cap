@@ -1,10 +1,9 @@
 # py_cap
-Python utilities for running GCAP (a source mechanism inversion code by Zhu L. http://www.eas.slu.edu/People/LZhu/home.html)
+This is a collection of Python utilities our group members wrote for running GCAP (a source mechanism inversion code by Zhu L. http://www.eas.slu.edu/People/LZhu/home.html) efficiently.
 
-Currently a manual page for using FK and GCAP has been setup at:
-https://www.overleaf.com/read/dtxzwrqntztd
+For a complete manual page on how to setup and use FK, GCAP, and this utility tool, please consult to the group research handbook (Chapter 2). Here is a short description.
 
-These utility scripts need to modified and run in the following order:
+For your own source inversion, these utility scripts need to be slightly modified and run in the following order:
 
 get_event_data.py -- select events based on start/end time, region and magnitude; identify one event; get station meta data (i.e., inventory) in the region within given epicentral distance; get bulk waveform for all stations; (in the second round eliminate traces from stream based on bad-quality-stations.txt); pickle event catalog, station inventory and stream objects.
 
