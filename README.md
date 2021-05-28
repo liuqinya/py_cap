@@ -17,4 +17,11 @@ process_data_to_sac.py (run under data/ as ../process_data_to_sac.py)-- load in 
 
 prepare_for_gcap.py -- prepare the weight file (weight.dat.depth) and create bash script 'cap_auto.bash' in the gcap directory to write the 'cap.pl' command line based on choices of inversion parameters (filters, distance scale, plot scale, weights, window selection, etc). Create all the necessary data links. Note: a line of system("ps2pdf $outps $outpdf"); has been added to cap_plt.pl to generate output plots in pdf format which is much more friendly to view. depth.pl has been updated to get the mechanism misfit plot vs depth. Parameters to be adjusted: green_dir, event_dir, model, depths list, test mw, pnl/surf_tmin/max, pnl weight, dist scale, plot_scale, body_surf_shift, min_dist_pnl, max_dist. This can be also done for several iterations, everytime update the 'bad-fit-stations.txt', every row has the format of 'NT_STA  [PZRT]', and eliminate those stations/components with bad fits.
 
+Before running prepare_for_gcap.py, update cap.pl in the gcap directory to reflect the correct path to cap_plt.pl: 
+require "$HOME/gcap/cap_plt.pl
+If no non-double couple inversion needed, ignore warnings like this:
+Unable to open /home/xyz/gcap/OK_event/Ok/Ok_3/33.grn.b
+Warning: non-DC components are ignored
+
+
 
