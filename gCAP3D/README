@@ -1,0 +1,57 @@
+# 	Information for the gCAP3D package
+#               @(#)README      1.0 6/16/2015
+
+1. Copyright and License
+  See LICENSE file.
+
+
+2. Content of the Package
+
+The gCAP package contains following main codes:
+
+  cap3D.c	Generalized 3D Cut-and-Paste (gCAP3D) full moment-tensor inversion code.
+
+  cap3D.pl	A Perl script to simplify the use of gCAP3D and to plot waveform fits.
+
+  depth.pl	A perl script to read in the outputs of gCAP3D for different
+		source depths and estimate the best source depth.
+
+  mtdcmp.f	A Fortran code to decompose a general moment tensor into ISO, DC
+		and CLVD tensors, and to compute the ISO and CLVD parameters.
+
+  radpttn.c	A C code to compute the normalized moment tensor components
+		from strike dip rake iso clvd and the P/SV/SH radiation pattern.
+
+
+3. Installation
+
+To compile the codes see Makefile. It requires that 
+SAC has been installed. Set environment variable
+SAC_HOME to point to where it is installed accordingly.
+
+
+4. Usage
+
+For usage, run cap3D.pl without argument. To test using the provided
+2008 Mt Carmel earthquake data, first calculate the Green's functions
+of CUS model (included), then do
+> make 20080418093700/mt.best
+
+
+5. References
+
+   Zhao and Helmberger, 1994, Source estimation from broadband regional seismograms.
+	BSSA, 84, 91-104.
+   Zhu and Helmberger, 1996, Advancement in source estimation techniques using
+	broadband regional seismograms. BSSA 86, 1634-1641.
+   Zhu and Ben-Zion, 2013, Parameterization of general seismic potency and moment
+	tensors for source inversion of seismic waveform data. GJI, doi:10.1093/gji/ggt137.
+   Zhu and Zhou, 2016, Seismic Moment Tensor Inversion Using 3D Velocity Model and Its Application to the 2013 Lushan Earthquake Sequence, J. Phys. and Chem. Earth. doi:10.1016/j.pce.2016.01.002. 
+
+
+6. Revision History
+
+    Nov 24, 2013	LZ	modified from cap.c to include using 3D Green's functions.
+    Nov 23, 2014	LZ	revised to filter data/GFs before windowing.
+    May 05, 2015	LZ	delete search for mw. use m0 = sqrt(u2/s2);
+    Sept. 17, 2019	LZ	remove the dependence on Numerical Recipes.
