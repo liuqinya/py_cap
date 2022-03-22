@@ -21,8 +21,6 @@ model = TauPyModel(model="ak135")
 
 data_pkl='data/data.pkl'
 print('Unpacking '+data_pkl+' file ...')
-f=open(data_pkl,'rb')
-print('Unpacking '+data_pkl+' file ...')
 try:
     f=open(data_pkl,'rb')
 except FileNotFoundError:

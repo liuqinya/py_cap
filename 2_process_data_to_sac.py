@@ -17,7 +17,10 @@ data_dir=os.getcwd()
 parent_dir=os.path.dirname(os.path.normpath(data_dir))
 data_pkl=data_dir+'/data.pkl'
 print('Unpacking '+data_pkl+' file ...')
-f=open(data_pkl,'rb')
+try:
+    f=open(data_pkl,'rb')
+except FileNotFoundError:
+    raise Exception('Error opening file '+data_pkl)
 ev=pickle.load(f)
 inv=pickle.load(f)
 stream=pickle.load(f)
@@ -41,15 +44,18 @@ print('Write data to sac files ...')
 sac_utils.stream_add_stats(stream,inv,ev,write_sac=True)
 
 #------------
-fk_dir='/home/lqy/gcap_test_20220303/fk' # absolute path to fk run code
+fk_dir='/directory-for-fk-source-code' # absolute path to fk run code
+if not os.path.isdir(fk_dir):
+    raise Exception('Error finding directory '+fk_dir)
+
 model='cus'
 green_dir=parent_dir+'/'+model # absolute path to greens function output dir
-os.makedirs(green_dir,exist_ok=True)
-if not os.path.isfile(green_dir+'/'+model):
-    sys.exit('No model file: '+green_dir+'/'+model)
+model_file=green_dir+'/'+model # absolute path to the model file 
+if not os.path.isfile(model_file):
+    raise Exception('No such file '+model_file)
 
 depths=[10, 15, 20] # avoid depth on model interfaces
-inv_iso_clvd=True
+inv_iso_clvd=False  # also compute greens functions .[abc] for iso+clvd inversions
 run_bash=False
 deltat=0.05
 syn_rec_length=160 # in seconds
@@ -102,14 +108,14 @@ fp.write('dist=`awk \'{print $2}\' '+dist_list+' | sort -g -u | awk  \'{printf "
 
 # write fk command
 print('  write fk command ...\n')
-fp.write('cp '+green_dir+'/'+model+' '+fk_dir+'\n')
+fp.write('cp '+model_file+' '+fk_dir+'\n')
 for depth in depths:
     fk_command='./fk.pl -M'+model+'/'+str(depth)+'/k -N'+str(nt)+'/'+str(deltat)+' $dist\n'
     fp.write('\ncd '+fk_dir+'\necho *****'+fk_command+fk_command)
     if inv_iso_clvd:
         fk_command='./fk.pl -M'+model+'/'+str(depth)+'/k -N'+str(nt)+'/'+str(deltat)+' -S0 $dist\n'
         fp.write('echo *****'+fk_command+fk_command)
-    fp.write('rm -rf '+green_dir+'/'+ model+'_'+str(depth)+'\nmv '+model+'_'+str(depth)+' '+green_dir+'\n')
+    fp.write('rm -rf '+model_file+'_'+str(depth)+'\nmv '+model+'_'+str(depth)+' '+green_dir+'\n')
 fp.close()
 
 # Question: any need to pre-pad greens functions?

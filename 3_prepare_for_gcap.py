@@ -5,10 +5,15 @@ import data_utils
 # use absolute path for gcap_dir, event_dir 
 
 # run directory for gcap code, data dir is imbedded as a link
-gcap_dir='/home/lqy/gcap_test_20220303/gcap'
+gcap_dir='/gcap-source-code-dir'
+if not os.path.isdir(gcap_dir):
+    raise Exception('Error finding gcap source code directory '+gcap_dir)
 
 # event data and greens function directory
-event_dir='/home/lqy/gcap_test_20220303/20080418093700'
+event_dir='/event-dir/20080418093700'
+if not os.path.isdir(event_dir):
+    raise Exception('Error finding event directory '+event_dir)
+
 gcap_command_file=event_dir+'/cap_auto.bash'
 green_dir=event_dir+'/' # no need to add model for the cap.pl command
 data_dir=event_dir+'/data'
@@ -20,7 +25,7 @@ model='cus'
 depths=[10, 15, 20] # avoid depth on model interfaces
 deltat=0.05
 mw=5.0 # event test magnitude
-include_iso_clvd=True  # also search for iso and clvd componenents in the inversion (requires fk already computed grn.[abc])
+include_iso_clvd=False  # also search for iso and clvd componenents in the inversion (requires fk already computed grn.[abc])
 niter=1  # number of iterations
 
 # filter parameters: tweak these to see fits
