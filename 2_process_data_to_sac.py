@@ -41,14 +41,15 @@ print('Write data to sac files ...')
 sac_utils.stream_add_stats(stream,inv,ev,write_sac=True)
 
 #------------
-fk_dir='/data2/gcap-inv/fk' # absolute path to fk run code
-model='chelsea'
+fk_dir='/home/lqy/gcap_test_20220303/fk' # absolute path to fk run code
+model='cus'
 green_dir=parent_dir+'/'+model # absolute path to greens function output dir
 os.makedirs(green_dir,exist_ok=True)
 if not os.path.isfile(green_dir+'/'+model):
     sys.exit('No model file: '+green_dir+'/'+model)
 
-depths=[2,3,4,5,6,7] # avoid depth on model interfaces
+depths=[10, 15, 20] # avoid depth on model interfaces
+inv_iso_clvd=True
 run_bash=False
 deltat=0.05
 syn_rec_length=160 # in seconds
@@ -71,7 +72,7 @@ for efile in glob.glob(data_dir+'/*.*.*.??[1E].sac'):
 #    print(efile, nfile, rfile, tfile)
     if not os.path.isfile(nfile):
         sys.exit('Error finding matching '+nfile+' to '+efile)
-#   use the cut command in sac to insure the same length of e,n or 1,2 files
+#   use the cut command in sac to ensure the same length of e,n or 1,2 files
     fp.write('  r '+efile+' '+nfile+'\n')
 #    fp.write('  cut off\n')
     fp.write('  rotate\n')
@@ -105,11 +106,13 @@ fp.write('cp '+green_dir+'/'+model+' '+fk_dir+'\n')
 for depth in depths:
     fk_command='./fk.pl -M'+model+'/'+str(depth)+'/k -N'+str(nt)+'/'+str(deltat)+' $dist\n'
     fp.write('\ncd '+fk_dir+'\necho *****'+fk_command+fk_command)
+    if inv_iso_clvd:
+        fk_command='./fk.pl -M'+model+'/'+str(depth)+'/k -N'+str(nt)+'/'+str(deltat)+' -S0 $dist\n'
+        fp.write('echo *****'+fk_command+fk_command)
     fp.write('rm -rf '+green_dir+'/'+ model+'_'+str(depth)+'\nmv '+model+'_'+str(depth)+' '+green_dir+'\n')
 fp.close()
 
 # Question: any need to pre-pad greens functions?
-
 if run_bash:
     print('Run fk command ...\n')
     os.system('bash fk_bash.cmd')

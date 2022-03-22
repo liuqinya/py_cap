@@ -19,9 +19,14 @@ import sac_utils
 
 model = TauPyModel(model="ak135")
 
-data_pkl='./data.pkl'
+data_pkl='data/data.pkl'
 print('Unpacking '+data_pkl+' file ...')
 f=open(data_pkl,'rb')
+print('Unpacking '+data_pkl+' file ...')
+try:
+    f=open(data_pkl,'rb')
+except FileNotFoundError:
+    raise Exception('Error opening file '+data_pkl)
 ev=pickle.load(f)
 inv=pickle.load(f)
 stream=pickle.load(f)
@@ -36,12 +41,12 @@ if use_existing_screen_file:
 print('Processing data (e.g., remove instrument response, anti-aliasing filter) ...')
 # to screen raw data for clipping, set remove_response and filter to be both False
 # remove instrument response
-remove_response=True
+remove_response=False
 if remove_response: 
     stream.remove_response(water_level=50,output='VEL')
 
 # apply filter to screen specific type of data: surface waves
-bp_filter=True
+bp_filter=False
 if bp_filter:
     # use [2.5, 20] sec to cover the bands for pnl and surf
     T_min=2.5  # 0.5

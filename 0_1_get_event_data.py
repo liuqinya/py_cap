@@ -12,18 +12,19 @@ from obspy.geodetics import gps2dist_azimuth
 import pickle
 import data_utils
 import sac_utils
-import os
+import os,sys
 
 # ============= get event metadata =====================
 # data server
 client = Client("IRIS")
+chan="BH?,HH?"
 
 # events info
-start_time = ["2016-01-01"]
-end_time = ["2016-12-31"]
-min_mag= [3.5]
+start_time = ["2008-04-18"]
+end_time = ["2008-04-19"]
+min_mag= [5.0]
 # define search region (OK induced seismicity zone --> a square box)
-ev_min_lat=33.70; ev_max_lat=37.02; ev_min_lon=-98.96; ev_max_lon=-96.11
+ev_min_lat=38; ev_max_lat=39; ev_min_lon=-88; ev_max_lon=-86
 # event info for Montney
 # events info
 #start_time = ["2014-08-05"]
@@ -47,7 +48,7 @@ for i in range(len(min_mag)):
 for i in range(len(catalog)):
     print(i, catalog[i].origins[0].time, catalog[i].magnitudes[0].mag, catalog[i].origins[0].depth/1000.)
 
-event_number=114
+event_number=0
 ev = catalog[event_number]
 #print(event)
 ev_time=ev.origins[0].time
@@ -56,24 +57,28 @@ ev_lon=ev.origins[0].longitude
 ev_dep=ev.origins[0].depth/1000.
 ev_mag=ev.magnitudes[0].mag
 print('event info:', ev_time, ev_lat, ev_lon, ev_dep, ev_mag)
+# raise Exception('Finished downloading event info')
 # ============= get station metadata =====================
 sta_max_radius=3 # degrees
 print('Getting broadband stations ....')
 inv=client.get_stations(
     level='response',starttime=ev_time, endtime=ev_time + 24*60*60,
     latitude=ev_lat, longitude=ev_lon, maxradius=sta_max_radius,
-    channel="BH?,HH?")
+    channel=chan)
 # # uncomment this part for station verbose output
-# print(inv)
-# inv.plot(projection='local')
-# nsta=0
-# for net in inv:
-#     nsta+=len(net)
-#     for sta in net:
-#         (dist,az,baz)=gps2dist_azimuth(ev_lat,ev_lon,sta.latitude,sta.longitude)
-#         print(net.code,sta.code,dist/1000)
-# print('Total number of available broadband stations: '+str(nsta))
-        
+#print(inv)
+#inv.plot(projection='local')
+## add scatter plot for the event location
+##plt.scatter(ev_lon, ev_lat, s=80)
+##plt.show()
+nsta=0
+for net in inv:
+    nsta+=len(net)
+    for sta in net:
+        (dist,az,baz)=gps2dist_azimuth(ev_lat,ev_lon,sta.latitude,sta.longitude)
+#       print(net.code,sta.code,dist/1000)
+print('Total number of available broadband stations: '+str(nsta))
+# raise Exception('Finished downloading station info')
 # # # # ###===========get the waveform================
 bulk=[];
 pre_origin_length=50
@@ -85,7 +90,7 @@ for net in inv:
     for sta in net:
         # exclude the station with missing data (even after merge)
         if sta.code not in exclude_sta:
-            bulk.append((net.code,sta.code,'*','BH?,HH?',ev_time-pre_origin_length,ev_time+record_length))
+            bulk.append((net.code,sta.code,'*',chan,ev_time-pre_origin_length,ev_time+record_length))
 #print(bulk)
 print('Requesting waveforms ...')
 stream=client.get_waveforms_bulk(bulk, attach_response=True)
@@ -94,10 +99,9 @@ stream.merge(fill_value='interpolate')
 print('Adding distance stats ...')
 sac_utils.stream_add_stats(stream,inv,ev)
 stream.sort(keys=['distance','network','station','location','channel'])
-print(stream)
 print('Total number of stations acquired: ',int(len(stream)/3))
 
-# # # first run: skip this part and save data.pkl first,
+# first run: skip this part and save data.pkl first,
 # # # then use screen_event_data.py
 # # # to quickly screen three-component data
 # # # at this point you need to screen the waveform, either to
@@ -125,4 +129,6 @@ pickle.dump(ev,f)
 pickle.dump(inv,f)
 pickle.dump(stream,f)
 f.close()
-
+# move to a data directory
+os.system('mkdir -p data/')
+os.system('mv '+data_pkl+' data/')

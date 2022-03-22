@@ -63,7 +63,7 @@ def write_weight_file(weight_file,dist_list,model_dir,check_bad_fit=False,bad_fi
         sys.exit('No greens function dir: '+model_dir)
         
     if check_bad_fit:
-        print('Eliminate bad components based on '+bad_fit_station_file+'...')
+        print('Eliminate bad-fitting components based on '+bad_fit_station_file+'...')
         if not os.path.isfile(bad_fit_station_file):
             sys.exit('Check bad_fit_station_file '+bad_fit_station_file)
         # step 1: read in bad_fit station/componentlist

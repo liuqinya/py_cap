@@ -25,16 +25,26 @@ import matplotlib.pyplot as plt
 
 # add stats headers including trace.stats.distance/latitude/longitude
 # figure out channel code number before select stream ...
-def stream_add_stats(data_stream,inv,evt,write_sac=False,rotate_in_obspy=False):
+def stream_add_stats(data_stream,inv,evt,write_sac=False,rotate_in_obspy=False,verbose=True):
     for net in inv:
         for sta in net:
             str1=data_stream.select(network=net.code,station=sta.code)
 #            print(str(net.code),str(sta.code),len(str1))
-            if len(str1) == 0:
+            if len(str1) == 0 :
+                if verbose:
+                    print('Skipping '+str(net.code)+'.'+str(sta.code)+':',str1)
                 continue
+            elif len(str1) %3 != 0:
+                print('Deleting traces: '+str(net.code)+'.'+str(sta.code)+':',str1)
+                for tr in str1:
+                    data_stream.remove(tr)
+                continue
+            elif verbose:
+                print('adding traces for '+str(net.code)+'.'+str(sta.code)+': '+str(len(str1)))
             # update in future to deal with multiple channel (total_number_of channels)
-            if len(str1) % 3 !=0:
-                print('Problem: missing components', str1); exit()
+#            print(len(str1),str1)
+#            if len(str1) % 3 !=0:
+#                print('Problem: missing components', str1); exit()
                 
             for tr in str1:
                 for chan in sta:
@@ -45,6 +55,7 @@ def stream_add_stats(data_stream,inv,evt,write_sac=False,rotate_in_obspy=False):
                 tr.stats.coordinates={'latitude':chan.latitude,'longitude':chan.longitude}
                 (tr.stats.distance,tr.stats.azimuth,tr.stats.back_azimuth)=gps2dist_azimuth(
                     chan.latitude, chan.longitude, evt.origins[0].latitude, evt.origins[0].longitude)
+                #print('Adding sac statistics for ', tr)
                 if write_sac==True:
                     sac= AttribDict()
                     sac.kstnm=str(sta.code);
