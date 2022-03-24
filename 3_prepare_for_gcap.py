@@ -40,6 +40,7 @@ body_surf_shift='-S2/5/0'; window='-T30/70'
 # minimum distance to start separating Pnl and surface waves
 # check screen_event_data.py output to allow at least 2 cycles between tp and ts
 min_dist_pnl=85 # km
+max_dist_pnl=200 # km
 # check screen_event_data.py output for the SNR deterioration with distance
 max_dist=300 # km
 
@@ -63,7 +64,7 @@ for depth in depths:
     weight_file='weight.dat.'+str(depth) # no need to add data_dir/
     print('write '+data_dir+'/'+weight_file+' for depth '+str(depth)+' km and data in dir '+data_dir+' and dist_list ' + dist_list+' ...\n')
     
-    data_utils.write_weight_file(data_dir+'/'+weight_file,dist_list,model_dir,check_bad_fit,bad_fit_station_file,min_dist_pnl,max_dist)
+    data_utils.write_weight_file(data_dir+'/'+weight_file,dist_list,model_dir,check_bad_fit,bad_fit_station_file,min_dist_pnl,max_dist_pnl,max_dist)
  
 # write command
 # use my modified cap_plt.pl file

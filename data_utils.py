@@ -54,7 +54,7 @@ def remove_station_from_stream(data_stream,inv,bad_station_file='bad-quality-sta
     return
 
 # --------------------------------------------------------
-def write_weight_file(weight_file,dist_list,model_dir,check_bad_fit=False,bad_fit_station_file='bad-fit-stations.txt',min_dist_pnl=0., max_dist=1000.):
+def write_weight_file(weight_file,dist_list,model_dir,check_bad_fit=False,bad_fit_station_file='bad-fit-stations.txt',min_dist_pnl=0.,max_dist_pnl=300., max_dist=1000.):
     
 #    print('Write weight file '+ weight_file+'...')
     if not os.path.isfile(dist_list):
@@ -97,7 +97,7 @@ def write_weight_file(weight_file,dist_list,model_dir,check_bad_fit=False,bad_fi
                         sys.exit('Error component names in '+bad_fit_station_file)
                     use_cmps[cmp]=0
         # adjust based on distance
-        if dist_km < min_dist_pnl:
+        if dist_km < min_dist_pnl or dist_km > max_dist_pnl:
             use_cmps['P'] = 0
         if dist_km > max_dist:
             use_cmps={'P':0,'Z':0,'R':0,'T':0}
