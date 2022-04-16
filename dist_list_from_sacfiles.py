@@ -5,7 +5,7 @@ from obspy import read
 
 # read input arguments
 if len(sys.argv) <= 1:
-    raise BaseException('input sac files')
+    raise BaseException('Usage: dist_list_from_sacfiles.py sac-files')
 
 dist_list=[]
 az_list=[]
