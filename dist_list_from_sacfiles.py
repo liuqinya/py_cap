@@ -1,4 +1,9 @@
-#!/usr/bin/python3
+"""
+
+this script gets the sorted distances from the dist header of a set of sac files
+  Usage: dist_list_from_sacfiles.py sac-files
+
+"""
 
 import sys
 from obspy import read
