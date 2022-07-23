@@ -1,8 +1,8 @@
-FC=gfortran
+FC=gfortran -ffixed-line-length-none
 CC=gcc
 optimize=-O
-FFLAGS=$(optimize) -ffpe-trap=overflow,invalid,denormal -ffixed-line-length-none
-CFLAGS=$(optimize) -Wno-unused-result
+FFLAGS=$(optimize)
+CFLAGS=$(optimize)
 #if SAC library has been installed, uncomment the next two lines
 #CFLAGS=$(optimize) -DSAC_LIB
 #SACLIB=-L$(SACHOME)/lib -lsac -lsacio
