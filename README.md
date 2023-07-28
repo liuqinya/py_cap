@@ -1,5 +1,5 @@
 # py_cap
-This is a collection of Python utilities our group members wrote for running GCAP (a source mechanism inversion code by Zhu L. http://www.eas.slu.edu/People/LZhu/home.html) efficiently. Note that FK and GCAP3D codes from Dr. Lupei Zhu (downloaded on 2022/02/12)'s website are included for reference. We will take these codes off if requested.
+This is a collection of Python utilities our group members wrote for running GCAP (a source mechanism inversion code by Zhu L. http://www.eas.slu.edu/People/LZhu/home.html) efficiently. Note that FK and GCAP3D codes from Dr. Lupei Zhu (downloaded on 2022/02/12)'s website are included for reference. We will take these codes off if requested. 
 
 For a complete manual page on how to setup and use FK, GCAP, and this utility tool, please consult to the group research handbook (Chapter 2). Here is a short description.
 
